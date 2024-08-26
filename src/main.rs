@@ -38,14 +38,15 @@ impl RandomWalk {
 
 // draw lines based on the RandomWalk component
 fn walk(mut gizmos: Gizmos, mut query: Query<&mut RandomWalk>) {
-    let mut walker  = query.iter_mut().next().unwrap();
-    walker.walk();
-    let path = &walker.path;
-    let mut start = Vec2::new(0., 0.);
-    for i in path.iter() {
-        let end = Vec2::new(start.x + i.x * SCALE, start.y + i.y * SCALE);
-        gizmos.line_2d(start, end,  WHITE);
-        start = end;
+    for mut walker in query.iter_mut() {
+        walker.walk();
+        let path = &walker.path;
+        let mut start = Vec2::new(0., 0.);
+        for i in path.iter() {
+            let end = Vec2::new(start.x + i.x * SCALE, start.y + i.y * SCALE);
+            gizmos.line_2d(start, end,  WHITE);
+            start = end;
+        }
     }
 }
 
