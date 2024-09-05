@@ -58,7 +58,6 @@ impl Plugin for RandomWalkPlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_resource(Time::<Fixed>::from_seconds(0.01))
-            .add_plugins(DefaultPlugins)
             .add_systems(Startup, setup)
             .add_systems(FixedUpdate, walk);
     }

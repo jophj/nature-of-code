@@ -32,7 +32,6 @@ impl Walker for BoundedRandomWalker {
         let y = rng.gen_range(-1.0..=1.0);
 
         let resultant = path.iter().fold(Vec2::new(0., 0.), |acc, x| Vec2::new(acc.x + x.x, acc.y + x.y));
-        println!("{:?} ", resultant);
 
         let x: f32  = if resultant.x < -boundaries.x || resultant.x > boundaries.x {
             // move towards the center
@@ -102,12 +101,11 @@ fn setup(mut commands: Commands) {
     );
 }
 
-pub struct RandomWalkCenteredPlugin;
-impl Plugin for RandomWalkCenteredPlugin {
+pub struct BoundedRandomWalkPlugin;
+impl Plugin for BoundedRandomWalkPlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_resource(Time::<Fixed>::from_seconds(0.01))
-            .add_plugins(DefaultPlugins)
             .add_systems(Startup, setup)
             .add_systems(FixedUpdate, walk);
     }
