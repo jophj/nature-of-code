@@ -7,15 +7,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'natureofcode'",
+            "name": "Debug executable 'nature-of-code'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=natureofcode",
-                    "--package=natureofcode"
+                    "--bin=nature-of-code",
+                    "--package=nature-of-code"
                 ],
                 "filter": {
-                    "name": "natureofcode",
+                    "name": "nature-of-code",
                     "kind": "bin"
                 }
             },
@@ -25,16 +25,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'natureofcode'",
+            "name": "Debug unit tests in executable 'nature-of-code'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=natureofcode",
-                    "--package=natureofcode"
+                    "--bin=nature-of-code",
+                    "--package=nature-of-code"
                 ],
                 "filter": {
-                    "name": "natureofcode",
+                    "name": "nature-of-code",
                     "kind": "bin"
                 }
             },
