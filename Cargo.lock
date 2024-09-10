@@ -2408,8 +2408,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "natureofcode"
-version = "0.1.0"
+name = "nature-of-code"
+version = "0.2.0"
 dependencies = [
  "bevy",
  "rand",
