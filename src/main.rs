@@ -1,4 +1,5 @@
 mod demos;
+mod libs;
 
 // use demos::random_walk::RandomWalkPlugin;
 // use demos::random_walk_bounded::BoundedRandomWalkPlugin;

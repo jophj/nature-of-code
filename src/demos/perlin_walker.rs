@@ -1,101 +1,30 @@
-use bevy::{
-    color::palettes::css::WHITE, prelude::*
-};
-use rand::{thread_rng, prelude::*};
+use bevy::{color::palettes::css::WHITE, prelude::*, render::view::window};
+use noise::{NoiseFn, Perlin};
 
-const SCALE: f32 = 1.0;
-const BOUNDARIES: Vec2 = Vec2::new(256., 128.);
-const MAX_STEP_SIZE: f32 = 20.0;
-
-#[derive(Component)]
-struct Walk {
-    path: Vec<Vec3>,
-}
-impl Walk {
-    fn new() -> Self {
-        Walk { path: Vec::new() }
-    }
-
-    fn append(&mut self, step: Vec3) {
-        self.path.push(step);
-    }
-}
-
-trait Walker {
-    fn walk(path: &Vec<Vec3>, boundaries: &Vec2) -> Vec3;
-}
-
-struct PerlinWalker;
-impl Walker for PerlinWalker {
-    fn walk(path: &Vec<Vec3>, boundaries: &Vec2) -> Vec3 {
-        let mut rng = thread_rng();
-
-        // step direction
-        let x = rng.gen_range(-1.0..=1.0);
-        let y = rng.gen_range(-1.0..=1.0);
-
-        // step size
-        let mut r1 = rng.gen_range(0_f32..=1.0);
-        let mut r2 = rng.gen_range(0_f32..=1.0);
-        while r2.powi(2) > r1 {
-            r1 = rng.gen_range(0_f32..=1.0);
-            r2 = rng.gen_range(0_f32..=1.0);
-        }
-        let s = r1 * MAX_STEP_SIZE;
-
-        // TODO restore this computation
-        let resultant = path.iter().fold(Vec2::new(0., 0.), |acc, current| Vec2::new(acc.x + current.x * s, acc.y + current.y * s));
-
-        let x: f32  = if resultant.x < -boundaries.x || resultant.x > boundaries.x {
-            // move towards the center
-            if resultant.x > 0. {
-                -1.0
-            } else {
-                1.0
-            }
-        } else {
-            // move in the same direction
-            x
-        };
-
-        let y = if resultant.y < -boundaries.y || resultant.y > boundaries.y {
-            // move towards the center
-            if resultant.y > 0. {
-                -1.0
-            } else {
-                1.0
-            }
-        } else {
-            // move in the same direction
-            y
-        };
-
-        Vec3::new(x, y, s)
-    }
-}
-
-
-// draw lines based on the RandomWalk component
-fn walk(mut gizmos: Gizmos, mut query: Query<&mut Walk>) {
+fn draw_walk(mut windows: Query<&mut Window>, time: Res<Time>, mut gizmos: Gizmos) {
     // log the window size
     // info!("Window size: {:?}", window);
-    for mut walker in query.iter_mut() {
-        let step = PerlinWalker::walk(&walker.path, &BOUNDARIES);
-        walker.append(step);
-        let path = &walker.path;
-        let mut start = Vec2::new(0., 0.);
-        for i in path.iter() {
-            let end = Vec2::new(start.x + i.x * SCALE * i.z, start.y + i.y * SCALE * i.z);
-            gizmos.line_2d(start, end,  WHITE);
-            start = end;
-            // info!("Start: {:?}, End: {:?}", start, end);
-        }
+    // println!("Time: {:?} {}", time.delta_seconds(), time.elapsed_seconds());
+    // for from 0 to boundaries width
+    let window = windows.iter_mut().next().unwrap();
+    let t: f64 = (time.elapsed_seconds() / 1.0) as f64;
+    let v = Perlin::new(0);
+    let mut input = 0_f64 + t;
+    let start_value = v.get([input]) * 120_f64;
+    let mut start = Vec2::new(-window.width() / 2.0, start_value as f32);
+    println!("Start: {:?} {}", input, start_value);
+    for i in 1..(window.width() as i32) {
+        input = input + 0.007;
+        let value = v.get([input]) * 120_f64;
+        // println!("Value: {} {}", input, value);
+        let end = Vec2::new((i as f32) - window.width() / 2.0, value as f32);
+        gizmos.line_2d(start, end, WHITE);
+        start = end;
     }
 }
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(Walk::new());
     commands.spawn(
         TextBundle::from_section("Perlin Walker", TextStyle::default()).with_style(Style {
             position_type: PositionType::Absolute,
@@ -109,9 +38,8 @@ fn setup(mut commands: Commands) {
 pub struct PerlinWalkerPlugin;
 impl Plugin for PerlinWalkerPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .insert_resource(Time::<Fixed>::from_seconds(0.01))
+        app.insert_resource(Time::<Fixed>::from_seconds(0.016))
             .add_systems(Startup, setup)
-            .add_systems(FixedUpdate, walk);
+            .add_systems(FixedUpdate, draw_walk);
     }
 }

@@ -54,7 +54,7 @@ fn dot_grid_gradient(ix: i32, iy: i32, x: f32, y: f32) -> f32 {
 }
 
 // Compute Perlin noise at coordinates x, y
-fn perlin(x: f32, y: f32) -> f32 {
+pub fn perlin(x: f32, y: f32) -> f32 {
     // Determine grid cell coordinates
     let x0 = x.floor() as i32;
     let x1 = x0 + 1;
@@ -75,10 +75,4 @@ fn perlin(x: f32, y: f32) -> f32 {
     let ix1 = interpolate(n0, n1, sx);
 
     interpolate(ix0, ix1, sy)
-}
-
-fn main() {
-    let x = 1.3;
-    let y = 4.7;
-    println!("Perlin noise value at ({}, {}): {}", x, y, perlin(x, y));
 }
